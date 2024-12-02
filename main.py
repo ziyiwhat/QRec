@@ -89,9 +89,40 @@ if __name__ == '__main__':
 
     mask = warp_and_prod(width, height, [H1, H2, H3])
     rect = grow(mask, width=width, height=height)
-    
+    print(f"rect :{rect}")
+
     rect = rect.astype(int)
-    mask[np.minimum(rect[0], rect[0]+rect[2]):np.maximum(rect[0], rect[0]+rect[2]), 
-         np.minimum(rect[1], rect[1]+rect[3]):np.maximum(rect[1], rect[1]+rect[3])]=0.5
-    im = Image.fromarray(mask * 255).convert('L')
-    im.save("warped.png")
+
+    # Calculate the area of the rectangle
+    rect_area = abs(rect[2] * rect[3])
+    original_area = width * height
+    area_ratio = rect_area / original_area
+    print(f"Area of the rectangle: {rect_area}")
+    print(f"Area of the original image: {original_area}")
+    print(f"Area ratio: {area_ratio:.4f}")
+
+    # Convert mask to color
+    mask_color = cv2.cvtColor((mask * 255).astype(np.uint8), cv2.COLOR_GRAY2BGR)
+
+    # Draw rectangle
+    start_point = (rect[1], rect[0])
+    end_point = (rect[1] + rect[3], rect[0] + rect[2])
+    color = (0, 255, 0)  # Green color
+    thickness = 2
+    mask_color = cv2.rectangle(mask_color, start_point, end_point, color, thickness)
+
+    # Highlight corner points
+    corners = [
+        (rect[1], rect[0]),  # Top-left
+        (rect[1] + rect[3], rect[0]),  # Top-right
+        (rect[1], rect[0] + rect[2]),  # Bottom-left
+        (rect[1] + rect[3], rect[0] + rect[2])  # Bottom-right
+    ]
+    corner_colors = [(255, 0, 0), (0, 255, 255), (255, 255, 0), (0, 0, 255)]  # Different colors
+
+    for corner, color in zip(corners, corner_colors):
+        mask_color = cv2.circle(mask_color, corner, radius=5, color=color, thickness=-1)
+
+    # Save the image with the rectangle and corners
+    im = Image.fromarray(mask_color)
+    im.save("warped_with_rect_and_corners.png")
