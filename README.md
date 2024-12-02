@@ -18,4 +18,4 @@ Searching will not end until there is a size with which no inscribed rectangle i
 
 ## Results
 
-![](./warped.png)
+![](./result.png)
