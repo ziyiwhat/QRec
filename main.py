@@ -17,9 +17,9 @@ def grow(mask, width, height):
     edge = cv2.Canny(mask_, 0.5, 0.5)
     idx = np.argwhere(edge!=0)
     np.random.shuffle(idx)
-    area_width = idx[:,1].max() - idx[:,1].min()
-    # print('Max cul:', len(idx), '*', area_width)
-    for h_ in range(1,area_width,1):
+    # area_width = idx[:,1].max() - idx[:,1].min()
+    print('Max cul:', len(idx), '*', width)
+    for h_ in range(1,width,10):
         flag = 0
         w_ = int(h_ * ratio)
         for x, y in idx:
@@ -31,7 +31,7 @@ def grow(mask, width, height):
                 if judger.sum() == 0:
                     rect = [x, y, w_, h_]
                     flag = 1
-                    # print('rect update:', rect)
+                    print('rect update:', rect)
                     break
             if (x - w_ >= 0) and (y + h_ < width):
                 mask_rec = np.zeros_like(mask)            
@@ -41,7 +41,7 @@ def grow(mask, width, height):
                 if judger.sum() == 0:
                     rect = [x, y, -w_, h_]
                     flag = 1
-                    # print('rect update:', rect)
+                    print('rect update:', rect)
                     break
             if  (x + w_ < height) and (y - h_ >= 0):
                 mask_rec = np.zeros_like(mask)            
@@ -51,7 +51,7 @@ def grow(mask, width, height):
                 if judger.sum() == 0:
                     rect = [x, y, w_, -h_]
                     flag = 1
-                    # print('rect update:', rect)
+                    print('rect update:', rect)
                     break
             if (x - w_ >= 0) and (y - h_ >= 0):
                 mask_rec = np.zeros_like(mask)            
@@ -61,31 +61,20 @@ def grow(mask, width, height):
                 if judger.sum() == 0:
                     rect = [x, y, -w_, -h_]
                     flag = 1
-                    # print('rect update:', rect)
+                    print('rect update:', rect)
                     break
         if not flag:
             break
     return np.array(rect)
 
 if __name__ == '__main__':
-    height, width = 384, 512
+    height, width = 960 * 2, 1080 * 2
     theta = np.radians(15)
-    H1 = np.array([
-        [np.cos(theta), -np.sin(theta), 0],
-        [np.sin(theta),  np.cos(theta), 0],
-        [0, 0, 1]
-    ])
-    theta = np.radians(-15)
-    H2 = np.array([
-        [np.cos(theta), -np.sin(theta), 0],
-        [np.sin(theta),  np.cos(theta), 0],
-        [0, 0, 1]
-    ])
-    H3 = np.array([
-        [1, 0.3, 0],
-        [0.2, 1, 0],
-        [0, 0, 1]
-    ])
+    H1 = np.load('./homo/0_homo.npy')
+    H2 = np.load('./homo/1_homo.npy')
+    H3 = np.load('./homo/2_homo.npy')
+
+    print(H1.shape)
 
     mask = warp_and_prod(width, height, [H1, H2, H3])
     rect = grow(mask, width=width, height=height)
