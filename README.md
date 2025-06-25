@@ -13,9 +13,3 @@ A largest inscribed rectangle ($R$) should have at least one conner alined to th
 Searching process interates over the size of the rectangle. For each size of $[H_i, W_i]$, four rectangles are tested based on the edge set $E$. Specifically, for each point $[x_j, y_j]$ in $E$, we test the region of $[H_i\pm x_j, W_i\pm y_j]$. The size of $[H_i, W_i]$ will be accepted once there exists a region inscribed in $M$.
 
 Searching will not end until there is a size with which no inscribed rectangle is found.
-
-
-
-## Results
-
-![](./result.png)
